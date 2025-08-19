@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Basic Calculator</title>
+  <link rel="stylesheet" href="style.css"/>
+
+  <style>
+    .calc-wrap {
+      max-width: 360px;
+      margin: 40px auto;
+      background: #2c2c44;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.45);
+    }
+    #basic-display {
+      width: 100%;
+      height: 54px;
+      font-size: 22px;
+      text-align: right;
+      border: none;
+      border-radius: 10px;
+      background: #111629;
+      color: #fff;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    .keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .keys button {
+      padding: 14px 0;
+      border: none;
+      border-radius: 10px;
+      background: #3a3a55;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform .15s ease, background .25s ease;
+    }
+    .keys button:hover { transform: translateY(-2px); background: #4da6ff; }
+    .span-2 { grid-column: span 2; }
+    .accent { background: #4da6ff; font-weight: 700; }
+    .danger { background: #8a3b3b; }
+  </style>
+</head>
+<body>
+  <!-- Navbar placeholder -->
+  <div id="navbar"></div>
+
+  <main class="container">
+    <h2 style="text-align:center;margin-bottom:10px;">Basic Calculator</h2>
+
+    <div class="calc-wrap">
+      <input id="basic-display" type="text" placeholder="0" disabled />
+
+      <div class="keys">
+        <!-- Row 1 -->
+        <button onclick="append('7')">7</button>
+        <button onclick="append('8')">8</button>
+        <button onclick="append('9')">9</button>
+        <button onclick="append('/')">÷</button>
+
+        <!-- Row 2 -->
+        <button onclick="append('4')">4</button>
+        <button onclick="append('5')">5</button>
+        <button onclick="append('6')">6</button>
+        <button onclick="append('*')">×</button>
+
+        <!-- Row 3 -->
+        <button onclick="append('1')">1</button>
+        <button onclick="append('2')">2</button>
+        <button onclick="append('3')">3</button>
+        <button onclick="append('-')">−</button>
+
+        <!-- Row 4 -->
+        <button onclick="append('0')">0</button>
+        <button onclick="append('.')">.</button>
+        <button onclick="append('+')">+</button>
+        <button onclick="calculate()">=</button>
+
+        <!-- Row 5 -->
+        <button onclick="append('(')">(</button>
+        <button onclick="append(')')">)</button>
+        <button class="danger" onclick="clearInput()">C</button>
+        <button onclick="deleteLast()">⌫</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="menu.js"></script>
+
+  <script>
+    const disp = document.getElementById('basic-display');
+
+    function append(v) {
+      disp.value += v;
+    }
+
+    function clearInput() {
+      disp.value = '';
+    }
+
+    function deleteLast() {
+      disp.value = disp.value.slice(0, -1);
+    }
+
+    function calculate() {
+      try {
+        const result = eval(disp.value);
+        disp.value = (result === undefined ? '' : result);
+      } catch (e) {
+        disp.value = 'Error';
+      }
+    }
+
+    // Keyboard support
+    document.addEventListener("keydown", function(event) {
+      if (/^[0-9+\-*/().]$/.test(event.key)) {
+        disp.value += event.key;
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        calculate();
+      } else if (event.key === "Backspace") {
+        event.preventDefault();
+        deleteLast();
+      } else if (event.key === "Escape") {
+        clearInput();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graphing Calculator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .graph-container {
+      max-width: 700px;
+      margin: 30px auto;
+      background: #2c2c44;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    #functionInput {
+      width: 70%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .graph-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: #4da6ff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .graph-btn:hover {
+      background: #0077cc;
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main class="container">
+    <h2>Graphing Calculator</h2>
+    <div class="graph-container">
+      <p>Enter a function of <b>x</b> (e.g. <code>sin(x)</code>, <code>x^2</code>, <code>cos(x)+x</code>):</p>
+      <input type="text" id="functionInput" value="sin(x)">
+      <button class="graph-btn" onclick="plotFunction()">Plot</button>
+      <canvas id="graphCanvas" width="600" height="400"></canvas>
+    </div>
+  </main>
+
+  <script src="menu.js"></script>
+  <script>
+    let chart;
+
+    function plotFunction() {
+      const funcInput = document.getElementById("functionInput").value;
+
+      // generate x values
+      let xValues = [];
+      let yValues = [];
+      for (let x = -10; x <= 10; x += 0.1) {
+        xValues.push(x);
+
+        // replace math notation with JS Math.*
+        let expr = funcInput.replace(/\^/g, "**")
+                            .replace(/sin/gi, "Math.sin")
+                            .replace(/cos/gi, "Math.cos")
+                            .replace(/tan/gi, "Math.tan")
+                            .replace(/log/gi, "Math.log")
+                            .replace(/exp/gi, "Math.exp")
+                            .replace(/pi/gi, "Math.PI");
+
+        try {
+          let y = eval(expr.replace(/x/g, `(${x})`));
+          yValues.push(y);
+        } catch {
+          yValues.push(NaN);
+        }
+      }
+
+      // destroy previous chart if exists
+      if (chart) chart.destroy();
+
+      // create new chart
+      const ctx = document.getElementById("graphCanvas").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: xValues,
+          datasets: [{
+            label: funcInput,
+            data: yValues,
+            borderColor: "#4da6ff",
+            borderWidth: 2,
+            fill: false,
+            pointRadius: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: { title: { display: true, text: "x" } },
+            y: { title: { display: true, text: "f(x)" } }
+          }
+        }
+      });
+    }
+
+    // plot default function on load
+    plotFunction();
+  </script>
+</body>
+</html>

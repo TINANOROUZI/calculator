@@ -1,0 +1,92 @@
+<!-- ai.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DeepSeek Math Solver</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; background:#0f1720; color:#fff; margin:0; padding:24px; }
+    .box { max-width: 760px; margin:0 auto; background:#1b2330; padding:20px; border-radius:12px; }
+    button { padding:10px 16px; border:0; border-radius:8px; background:#3a82f6; color:#fff; font-weight:600; cursor:pointer; }
+    button[disabled]{ opacity:.6; cursor:not-allowed; }
+    #answer { margin-top:16px; font-size:20px; font-weight:700; background:#0c121b; padding:14px; border-radius:8px; min-height:28px; }
+    #error { margin-top:16px; white-space:pre-wrap; background:#241417; color:#ffd0d0; padding:12px; border-radius:8px; }
+    #preview { display:block; margin-top:12px; max-width:100%; border-radius:8px; }
+    .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>DeepSeek Math Solver</h1>
+    <div class="row">
+      <input type="file" id="file" accept="image/*">
+      <button id="solveBtn">Solve</button>
+      <button id="ocrBtn" title="Test OCR only">Test OCR</button>
+    </div>
+    <img id="preview" alt="" />
+    <div id="answer">—</div>
+    <div id="error"></div>
+  </div>
+
+  <script>
+    const fileEl = document.getElementById("file");
+    const preview = document.getElementById("preview");
+    const answerEl = document.getElementById("answer");
+    const errorEl = document.getElementById("error");
+    const solveBtn = document.getElementById("solveBtn");
+    const ocrBtn = document.getElementById("ocrBtn");
+    let lastFile = null;
+
+    const showErr = (obj) => {
+      errorEl.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+    };
+
+    fileEl.addEventListener("change", e => {
+      lastFile = e.target.files?.[0] || null;
+      if (lastFile) {
+        try { URL.revokeObjectURL(preview.src); } catch {}
+        preview.src = URL.createObjectURL(lastFile);
+      } else {
+        preview.removeAttribute("src");
+      }
+      answerEl.textContent = "—";
+      errorEl.textContent = "";
+    });
+
+    async function postForm(url) {
+      if (!lastFile) throw new Error("Please choose an image.");
+      const fd = new FormData(); fd.append("photo", lastFile);
+      const res = await fetch(url, { method: "POST", body: fd });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = { raw: text }; }
+      if (!res.ok) throw data;
+      return data;
+    }
+
+    solveBtn.addEventListener("click", async () => {
+      errorEl.textContent = ""; answerEl.textContent = "Processing…"; solveBtn.disabled = true;
+      try {
+        const data = await postForm("http://localhost:3000/solve");
+        answerEl.textContent = data.answer ?? "No answer";
+        if (data.error) showErr(data.error);
+      } catch (e) {
+        answerEl.textContent = "—";
+        showErr(e);
+      } finally { solveBtn.disabled = false; }
+    });
+
+    ocrBtn.addEventListener("click", async () => {
+      errorEl.textContent = ""; answerEl.textContent = "OCR…"; ocrBtn.disabled = true;
+      try {
+        const data = await postForm("http://localhost:3000/debug-ocr");
+        answerEl.textContent = data.ocrText ? ("OCR OK (first 150 chars): " + data.ocrText.slice(0,150)) : "OCR empty";
+      } catch (e) {
+        answerEl.textContent = "—";
+        showErr(e);
+      } finally { ocrBtn.disabled = false; }
+    });
+  </script>
+</body>
+</html>

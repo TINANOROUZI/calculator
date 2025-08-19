@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometry Tools</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .geo-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #2c2c44;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    }
+    .geo-form {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #1a1a2e;
+      border-radius: 10px;
+    }
+    .geo-form label {
+      display: block;
+      margin: 8px 0 5px;
+    }
+    .geo-form input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .geo-btn {
+      display: inline-block;
+      margin-top: 8px;
+      background: #4da6ff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s ease;
+    }
+    .geo-btn:hover {
+      background: #0077cc;
+    }
+    #geoResult {
+      margin-top: 20px;
+      padding: 15px;
+      background: #111;
+      color: #fff;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main class="container">
+    <h2>Geometry Tools</h2>
+    <div class="geo-container">
+      
+      <!-- Circle -->
+      <div class="geo-form">
+        <h3>Area of Circle</h3>
+        <label>Radius:</label>
+        <input type="number" id="circleRadius" value="5">
+        <button class="geo-btn" onclick="circleArea()">Calculate</button>
+      </div>
+
+      <!-- Rectangle -->
+      <div class="geo-form">
+        <h3>Area of Rectangle</h3>
+        <label>Width:</label>
+        <input type="number" id="rectWidth" value="4">
+        <label>Height:</label>
+        <input type="number" id="rectHeight" value="6">
+        <button class="geo-btn" onclick="rectangleArea()">Calculate</button>
+      </div>
+
+      <!-- Triangle -->
+      <div class="geo-form">
+        <h3>Area of Triangle</h3>
+        <label>Base:</label>
+        <input type="number" id="triBase" value="8">
+        <label>Height:</label>
+        <input type="number" id="triHeight" value="5">
+        <button class="geo-btn" onclick="triangleArea()">Calculate</button>
+      </div>
+
+      <!-- Sphere -->
+      <div class="geo-form">
+        <h3>Volume of Sphere</h3>
+        <label>Radius:</label>
+        <input type="number" id="sphereRadius" value="3">
+        <button class="geo-btn" onclick="sphereVolume()">Calculate</button>
+      </div>
+
+      <!-- Cylinder -->
+      <div class="geo-form">
+        <h3>Volume of Cylinder</h3>
+        <label>Radius:</label>
+        <input type="number" id="cylRadius" value="3">
+        <label>Height:</label>
+        <input type="number" id="cylHeight" value="7">
+        <button class="geo-btn" onclick="cylinderVolume()">Calculate</button>
+      </div>
+
+      <h3>Result:</h3>
+      <div id="geoResult">--</div>
+    </div>
+  </main>
+
+  <script src="menu.js"></script>
+  <script>
+    function circleArea() {
+      let r = parseFloat(document.getElementById("circleRadius").value);
+      document.getElementById("geoResult").innerText = "Area of Circle = " + (Math.PI * r * r).toFixed(2);
+    }
+
+    function rectangleArea() {
+      let w = parseFloat(document.getElementById("rectWidth").value);
+      let h = parseFloat(document.getElementById("rectHeight").value);
+      document.getElementById("geoResult").innerText = "Area of Rectangle = " + (w * h).toFixed(2);
+    }
+
+    function triangleArea() {
+      let b = parseFloat(document.getElementById("triBase").value);
+      let h = parseFloat(document.getElementById("triHeight").value);
+      document.getElementById("geoResult").innerText = "Area of Triangle = " + (0.5 * b * h).toFixed(2);
+    }
+
+    function sphereVolume() {
+      let r = parseFloat(document.getElementById("sphereRadius").value);
+      document.getElementById("geoResult").innerText = "Volume of Sphere = " + ((4/3) * Math.PI * Math.pow(r,3)).toFixed(2);
+    }
+
+    function cylinderVolume() {
+      let r = parseFloat(document.getElementById("cylRadius").value);
+      let h = parseFloat(document.getElementById("cylHeight").value);
+      document.getElementById("geoResult").innerText = "Volume of Cylinder = " + (Math.PI * r * r * h).toFixed(2);
+    }
+  </script>
+</body>
+</html>

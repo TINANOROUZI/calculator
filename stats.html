@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistics Calculator</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .stats-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #2c2c44;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 15px;
+      background: #1a1a2e;
+      color: white;
+    }
+    .stats-btn {
+      background: #4da6ff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin: 5px;
+    }
+    .stats-btn:hover {
+      background: #0077cc;
+    }
+    #statsResult {
+      margin-top: 20px;
+      padding: 15px;
+      background: #111;
+      color: #fff;
+      border-radius: 10px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main class="container">
+    <h2>Statistics Calculator</h2>
+    <div class="stats-container">
+      <p>Enter numbers separated by commas:</p>
+      <textarea id="statsInput">5, 10, 10, 15, 20</textarea>
+      <div>
+        <button class="stats-btn" onclick="calcStats()">Calculate All</button>
+      </div>
+      <h3>Result:</h3>
+      <div id="statsResult">--</div>
+    </div>
+  </main>
+
+  <script src="menu.js"></script>
+  <script>
+    function parseInput() {
+      let values = document.getElementById("statsInput").value
+        .split(",")
+        .map(x => parseFloat(x.trim()))
+        .filter(x => !isNaN(x));
+      return values;
+    }
+
+    function mean(arr) {
+      return arr.reduce((a,b) => a+b, 0) / arr.length;
+    }
+
+    function median(arr) {
+      arr = [...arr].sort((a,b) => a-b);
+      let mid = Math.floor(arr.length/2);
+      return arr.length % 2 !== 0 ? arr[mid] : (arr[mid-1] + arr[mid]) / 2;
+    }
+
+    function mode(arr) {
+      let freq = {};
+      arr.forEach(num => freq[num] = (freq[num] || 0) + 1);
+      let maxFreq = Math.max(...Object.values(freq));
+      let modes = Object.keys(freq).filter(k => freq[k] === maxFreq);
+      return modes.join(", ");
+    }
+
+    function variance(arr) {
+      let m = mean(arr);
+      return mean(arr.map(x => (x-m)**2));
+    }
+
+    function stdDev(arr) {
+      return Math.sqrt(variance(arr));
+    }
+
+    function calcStats() {
+      let data = parseInput();
+      if (data.length === 0) {
+        document.getElementById("statsResult").innerText = "Error: Enter valid numbers.";
+        return;
+      }
+      let result = 
+        "Mean = " + mean(data).toFixed(2) + "\n" +
+        "Median = " + median(data).toFixed(2) + "\n" +
+        "Mode = " + mode(data) + "\n" +
+        "Variance = " + variance(data).toFixed(2) + "\n" +
+        "Standard Deviation = " + stdDev(data).toFixed(2);
+      document.getElementById("statsResult").innerText = result;
+    }
+  </script>
+</body>
+</html>

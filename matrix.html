@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matrix Calculator</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .matrix-container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    table {
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+    td {
+      border: 1px solid #555;
+      padding: 5px;
+    }
+    input.matrix-cell {
+      width: 50px;
+      padding: 8px;
+      text-align: center;
+      border: none;
+      background: #2c2c44;
+      color: white;
+      border-radius: 5px;
+    }
+    .matrix-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    #matrixResult {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main class="container">
+    <h2>Matrix Calculator</h2>
+    <p>Enter matrix values into the tables:</p>
+
+    <div class="matrix-container">
+      <div>
+        <h3>Matrix A</h3>
+        <table id="matrixA"></table>
+      </div>
+      <div>
+        <h3>Matrix B</h3>
+        <table id="matrixB"></table>
+      </div>
+    </div>
+
+    <div class="matrix-buttons">
+      <button onclick="addMatrices()">Add</button>
+      <button onclick="multiplyMatrices()">Multiply</button>
+      <button onclick="detMatrix('A')">Det(A)</button>
+      <button onclick="detMatrix('B')">Det(B)</button>
+      <button onclick="invMatrix('A')">Inverse(A)</button>
+      <button onclick="invMatrix('B')">Inverse(B)</button>
+    </div>
+
+    <h3>Result:</h3>
+    <pre id="matrixResult"></pre>
+  </main>
+
+  <script src="menu.js"></script>
+  <script>
+    // Create input grid dynamically
+    function createMatrix(tableId, rows=2, cols=2) {
+      let table = document.getElementById(tableId);
+      table.innerHTML = "";
+      for (let i = 0; i < rows; i++) {
+        let row = document.createElement("tr");
+        for (let j = 0; j < cols; j++) {
+          let cell = document.createElement("td");
+          let input = document.createElement("input");
+          input.type = "number";
+          input.value = (i*cols + j + 1); // auto-fill numbers
+          input.className = "matrix-cell";
+          cell.appendChild(input);
+          row.appendChild(cell);
+        }
+        table.appendChild(row);
+      }
+    }
+
+    // Extract matrix from table inputs
+    function getMatrix(tableId) {
+      let table = document.getElementById(tableId);
+      let matrix = [];
+      for (let i = 0; i < table.rows.length; i++) {
+        let row = [];
+        for (let j = 0; j < table.rows[i].cells.length; j++) {
+          row.push(parseFloat(table.rows[i].cells[j].firstChild.value) || 0);
+        }
+        matrix.push(row);
+      }
+      return matrix;
+    }
+
+    function displayMatrix(matrix) {
+      return matrix.map(row => row.join(" ")).join("\n");
+    }
+
+    // Add
+    function addMatrices() {
+      let A = getMatrix("matrixA");
+      let B = getMatrix("matrixB");
+
+      if (A.length !== B.length || A[0].length !== B[0].length) {
+        document.getElementById("matrixResult").innerText = "Error: Matrices must be same size!";
+        return;
+      }
+
+      let result = A.map((row,i) => row.map((val,j) => val + B[i][j]));
+      document.getElementById("matrixResult").innerText = displayMatrix(result);
+    }
+
+    // Multiply
+    function multiplyMatrices() {
+      let A = getMatrix("matrixA");
+      let B = getMatrix("matrixB");
+
+      if (A[0].length !== B.length) {
+        document.getElementById("matrixResult").innerText = "Error: Columns of A must match rows of B!";
+        return;
+      }
+
+      let result = Array.from({length: A.length}, () => Array(B[0].length).fill(0));
+      for (let i = 0; i < A.length; i++) {
+        for (let j = 0; j < B[0].length; j++) {
+          for (let k = 0; k < B.length; k++) {
+            result[i][j] += A[i][k] * B[k][j];
+          }
+        }
+      }
+      document.getElementById("matrixResult").innerText = displayMatrix(result);
+    }
+
+    // Determinant
+    function det(matrix) {
+      if (matrix.length !== matrix[0].length) throw "Matrix must be square";
+      if (matrix.length === 1) return matrix[0][0];
+      if (matrix.length === 2) return matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0];
+
+      let determinant = 0;
+      for (let i = 0; i < matrix.length; i++) {
+        let sub = matrix.slice(1).map(row => row.filter((_,j) => j !== i));
+        determinant += ((i%2===0 ? 1 : -1) * matrix[0][i] * det(sub));
+      }
+      return determinant;
+    }
+
+    function detMatrix(which) {
+      try {
+        let M = getMatrix("matrix"+which);
+        document.getElementById("matrixResult").innerText = "Det("+which+") = " + det(M);
+      } catch (e) {
+        document.getElementById("matrixResult").innerText = "Error: " + e;
+      }
+    }
+
+    // Inverse
+    function invMatrix(which) {
+      try {
+        let M = getMatrix("matrix"+which);
+        let n = M.length;
+        if (n !== M[0].length) throw "Matrix must be square";
+
+        let I = M.map((row,i) => row.concat(row.map((_,j) => (i===j?1:0))));
+
+        for (let i = 0; i < n; i++) {
+          let diag = I[i][i];
+          if (diag === 0) throw "Matrix not invertible";
+
+          for (let j = 0; j < 2*n; j++) I[i][j] /= diag;
+
+          for (let k = 0; k < n; k++) {
+            if (k !== i) {
+              let factor = I[k][i];
+              for (let j = 0; j < 2*n; j++) I[k][j] -= factor * I[i][j];
+            }
+          }
+        }
+
+        let result = I.map(row => row.slice(n));
+        document.getElementById("matrixResult").innerText = displayMatrix(result);
+      } catch (e) {
+        document.getElementById("matrixResult").innerText = "Error: " + e;
+      }
+    }
+
+    // Create default 2x2 matrices on load
+    createMatrix("matrixA", 2, 2);
+    createMatrix("matrixB", 2, 2);
+  </script>
+</body>
+</html>
