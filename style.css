@@ -1,4 +1,4 @@
-/* ---------- Base / Reset ---------- */
+/* ============== Base / Reset ============== */
 *,
 *::before,
 *::after { box-sizing: border-box; }
@@ -6,6 +6,7 @@
 html, body {
   margin: 0;
   padding: 0;
+  min-height: 100%;
 }
 
 body {
@@ -13,7 +14,10 @@ body {
   background: #0f1425;
   color: #e7ecff;
   line-height: 1.5;
-  overflow-x: hidden; /* prevent horizontal scrollbar on tablets/phones */
+  min-height: 100dvh;            /* allow scrolling on mobile/tablet */
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;            /* prevent horizontal scrollbar */
 }
 
 /* Containers keep a clean width on all devices */
@@ -22,24 +26,47 @@ body {
   margin-inline: auto;
 }
 
-/* ---------- Hero ---------- */
+/* ============== Navbar (compact) ============== */
+/* This targets your injected navbar block. If your navbar has inner elements
+   like .brand or h1/h2, these rules make it shorter and tidier. */
+#navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(9, 13, 28, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid #1b2340;
+  padding: 8px 12px;            /* smaller height */
+}
+#navbar h1, #navbar h2, #navbar .brand {
+  margin: 0;
+  font-size: 18px;              /* smaller title */
+  line-height: 1.2;
+}
+#navbar a {
+  color: #cfe1ff;
+  text-decoration: none;
+  padding: 6px 10px;            /* smaller link paddings */
+  font-size: 14px;
+}
+#navbar a:hover { color: #66b4ff; }
+
+/* ============== Hero ============== */
 .hero {
   text-align: center;
-  padding: clamp(56px, 9vw, 110px) 0 28px;
+  padding: clamp(40px, 7.5vw, 96px) 0 24px;  /* a touch smaller */
+  flex: 1 0 auto;                            /* fill available height until tools open */
 }
-
 .hero h1 {
   margin: 0 0 8px;
-  font-size: clamp(32px, 6.5vw, 60px);
+  font-size: clamp(28px, 6vw, 56px);
   letter-spacing: 0.4px;
 }
-
 .hero p {
-  margin: 0 0 22px;
+  margin: 0 0 20px;
   color: #b7c4ff;
-  font-size: clamp(16px, 2.2vw, 20px);
+  font-size: clamp(15px, 2.1vw, 19px);
 }
-
 .hero-btn {
   display: inline-block;
   padding: 12px 22px;
@@ -53,13 +80,14 @@ body {
 }
 .hero-btn:hover { transform: translateY(-2px); background: #3796fb; }
 
-/* ---------- Cards grid ---------- */
+/* ============== Cards grid ============== */
 .cards-container {
   /* grid layout (applies when opened) */
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 16px;
   padding: 8px 0 48px;
+  flex: 0 0 auto;               /* don't absorb height; let page scroll naturally */
 }
 
 /* Card styles */
@@ -71,15 +99,8 @@ body {
   box-shadow: 0 10px 28px rgba(0,0,0,.35);
   border: 1px solid #202844;
 }
-
-.card h2 {
-  margin: 0 0 6px;
-  font-size: 22px;
-}
-.card p {
-  margin: 0 0 16px;
-  color: #b9c6ff;
-}
+.card h2 { margin: 0 0 6px; font-size: 22px; }
+.card p  { margin: 0 0 16px; color: #b9c6ff; }
 
 .card-btn {
   display: inline-block;
@@ -93,17 +114,12 @@ body {
 }
 .card-btn:hover { transform: translateY(-2px); background: #52a9ff; }
 
-/* Tablet (no horizontal scrollbar) */
-@media (min-width: 640px) {
-  .card { grid-column: span 6; }
-}
-
+/* Tablet */
+@media (min-width: 640px) { .card { grid-column: span 6; } }
 /* Desktop */
-@media (min-width: 992px) {
-  .card { grid-column: span 4; }
-}
+@media (min-width: 992px) { .card { grid-column: span 4; } }
 
-/* ---------- Reveal animation (cards hidden by default) ---------- */
+/* ============== Reveal animation (hidden by default) ============== */
 .cards-container {
   overflow: hidden;
   max-height: 0;                 /* keep hidden on ALL sizes initially */
@@ -115,21 +131,23 @@ body {
     transform 420ms ease;
   will-change: max-height, opacity, transform;
 }
-
 .cards-container.is-open {
   max-height: 4000px;            /* large enough to contain all cards */
   opacity: 1;
   transform: translateY(0);
 }
+/* After open, lift the cap so page can scroll freely */
+.cards-container.is-open.done {
+  max-height: none;
+}
 
-/* stagger each card when opening */
+/* Stagger each card when opening */
 .tool-card {
   opacity: 0;
   transform: translateY(18px);
   animation: toolIn 460ms cubic-bezier(.2,.7,.2,1) forwards;
   animation-play-state: paused;
 }
-
 .cards-container.is-open .tool-card { animation-play-state: running; }
 .cards-container.is-open .tool-card:nth-child(1) { animation-delay: 60ms; }
 .cards-container.is-open .tool-card:nth-child(2) { animation-delay: 120ms; }
@@ -139,30 +157,6 @@ body {
 .cards-container.is-open .tool-card:nth-child(6) { animation-delay: 360ms; }
 
 @keyframes toolIn { to { opacity: 1; transform: translateY(0); } }
-
-
-/* Make body take full height and use flexbox layout */
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Hero + tools section should expand to push footer down */
-.hero, main {
-  flex: 1;
-}
-
-/* Footer always at bottom */
-.footer {
-  margin-top: auto;  /* pushes it to the very bottom */
-  width: 100%;
-  padding: 15px 0;
-  background: #1b2136;
-  color: #9fb0ff;
-  text-align: center;
-}
 
 /* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
@@ -176,72 +170,12 @@ html, body {
   }
 }
 
-/* ---------- Footer ---------- */
-/* make sure body takes full height */
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
+/* ============== Footer (sticks to bottom when content is short) ============== */
+.footer {
+  margin-top: auto;              /* push to bottom when page is short */
+  width: 100%;
+  padding: 15px 0;
+  background: #1b2136;
+  color: #9fb0ff;
+  text-align: center;
 }
-
-/* main content should expand */
-main {
-  flex: 1;
-}
-
-/* footer at the bottom */
-/* Make body take full height and use flexbox layout */
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Hero + tools section should expand to push footer down */
-.hero, main {
-  flex: 1;
-}
-
-/* Footer always at bottom */
-/* Make body take full height and use flexbox layout */
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Hero + tools section should expand to push footer down */
-.hero, main {
-  flex: 1;
-}
-
-/* Footer always at bottom */
-/* Make body take full height and use flexbox layout */
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Hero + tools section should expand to push footer down */
-.hero, main {
-  flex: 1;
-}
-/* Make body take full height and use flexbox layout */
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Hero + tools section should expand to push footer down */
-.hero, main {
-  flex: 1;
-}
-
-

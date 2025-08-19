@@ -55,13 +55,12 @@
   </main>
 
   <footer class="footer">
-  <p>© 2025 Calculator Hub | All Rights Reserved</p>
-</footer>
-
+    <p>© 2025 Calculator Hub | All Rights Reserved</p>
+  </footer>
 
   <script src="menu.js"></script>
 
-  <!-- Reveal on click + smooth scroll (no toggle; always open on click) -->
+  <!-- Reveal on click + smooth scroll -->
   <script>
     (function () {
       const btn = document.getElementById('exploreBtn');
@@ -76,6 +75,9 @@
         btn.setAttribute('aria-expanded', 'true');
         tools.scrollIntoView({ behavior: 'smooth', block: 'start' });
         history.replaceState(null, '', '#tools');
+
+        // ✅ NEW: after the open transition, lift max-height so page can scroll
+        setTimeout(() => tools.classList.add('done'), 750);
       }
 
       btn.addEventListener('click', openTools);
