@@ -8,12 +8,32 @@
 </head>
 <body>
   <div id="navbar"></div>
+  <!-- Moving announcement / ticker -->
+<!-- Moving announcement / ticker -->
+<div class="promo-ticker" aria-label="Site announcement">
+  <div class="ticker-track">
+    <div class="ticker-line">
+      <span class="ticker-item">✨ The best calculator for solving your problems—fast, accurate, and powerful.</span>
+      <span class="ticker-sep">•</span>
+      <span class="ticker-item">🧮 Basic, Scientific, Matrix, Geometry, Graphing & Statistics—everything in one place.</span>
+      <span class="ticker-sep">•</span>
+      <span class="ticker-item">⚡ Smooth, responsive, and works great on any device.</span>
+    </div>
+    <!-- JS will clone .ticker-line once and append it here -->
+  </div>
+</div>
+
+
 
   <header class="hero container">
-    <h1>🧮 Calculator Hub</h1>
-    <p>All-in-one calculators for math, science, and more.</p>
-    <a id="exploreBtn" href="#tools" class="hero-btn" aria-expanded="false">Explore Tools ↓</a>
+    <h1 id="heroTitle">🧮 Calculator Hub</h1>
+    <p id="heroSubtitle">All-in-one calculators for math, science, and more.</p>
+    <a id="exploreBtn" href="#tools" class="hero-btn">Explore Tools ↓</a>
+
   </header>
+
+  <!-- rest of your page -->
+
 
   <!-- Cards are collapsed by default (hidden on ALL sizes) -->
   <main id="tools" class="container cards-container is-collapsed" aria-hidden="true">
@@ -88,5 +108,19 @@
       }
     })();
   </script>
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const track = document.querySelector('.promo-ticker .ticker-track');
+  if (!track) return;
+  const line = track.querySelector('.ticker-line');
+  if (!line) return;
+
+  // Clone the line once to create a continuous loop (50% width + 50% width)
+  const clone = line.cloneNode(true);
+  clone.setAttribute('aria-hidden', 'true');
+  clone.classList.add('clone');
+  track.appendChild(clone);
+});
+</script>
 </body>
 </html>
