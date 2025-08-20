@@ -179,3 +179,58 @@ body {
   color: #9fb0ff;
   text-align: center;
 }
+/* Compact top nav */
+#navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(9, 13, 28, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid #1b2340;
+}
+
+.mini-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;                 /* small height */
+}
+
+.mini-nav .brand {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e7ecff;
+  text-decoration: none;
+}
+
+.mini-nav .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mini-nav .nav-right a {
+  color: #cfe1ff;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.mini-nav .nav-right a:hover {
+  color: #66b4ff;
+}
+
+/* Back button style (visible only on sub-pages) */
+.back-btn {
+  background: #2a3354;
+  color: #e7ecff !important;
+  font-weight: 700;
+  padding: 6px 10px !important;
+  border: 1px solid #33406b;
+}
+
+.back-btn:hover {
+  background: #37406a;
+  color: #8fc2ff !important;
+}
